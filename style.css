@@ -1,0 +1,25 @@
+/* Tampilan Print / PDF Optimization */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #jurnal-section, #jurnal-section *,
+    #laporan-section, #laporan-section * {
+        visibility: visible;
+    }
+    #jurnal-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Penanda baris Jurnal Kredit agar menjorok ke dalam (Standar Akuntansi) */
+.kredit-row {
+    padding-left: 20px;
+    font-style: italic;
+}

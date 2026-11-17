@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Akuntansi UMKM - Fresh Flower Bucket Mavin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-emerald-700 text-white shadow-lg no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-full text-emerald-700">
+                        <i class="fa-solid fa-spa text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-tight">Fresh Flower Bucket Mavin</h1>
+                        <p class="text-xs text-emerald-200">Sistem Akuntansi & Simulasi Keuangan UMKM</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="confirmResetAll()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center transition shadow-sm">
+                        <i class="fa-solid fa-rotate-left mr-1.5"></i> Reset Total (0)
+                    </button>
+                    <button onclick="loadSampleData()" class="bg-emerald-600 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center transition shadow-sm border border-emerald-500">
+                        <i class="fa-solid fa-vial mr-1.5"></i> Muat Data Contoh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white border-b border-slate-200 shadow-sm no-print sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex space-x-2 sm:space-x-8 overflow-x-auto py-2" id="navTabs">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-emerald-700 bg-emerald-50 border-b-2 border-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie mr-2"></i>Dashboard
+                </button>
+                <button onclick="switchTab('master-bunga')" id="tab-master-bunga" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-seedling mr-2"></i>Katalog Bunga
+                </button>
+                <button onclick="switchTab('transaksi')" id="tab-transaksi" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-cash-register mr-2"></i>Input Transaksi
+                </button>
+                <button onclick="switchTab('jurnal')" id="tab-jurnal" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-book mr-2"></i>Jurnal Umum
+                </button>
+                <button onclick="switchTab('buku-besar')" id="tab-buku-besar" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-list-check mr-2"></i>Buku Besar
+                </button>
+                <button onclick="switchTab('laporan')" id="tab-laporan" class="nav-btn px-3 py-2 text-sm font-medium rounded-md text-slate-600 hover:text-emerald-600 whitespace-nowrap">
+                    <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Laporan Keuangan
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="sec-dashboard" class="tab-content space-y-6">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kas di Tangan</p>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1" id="dash-kas">Rp 0</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                        <i class="fa-solid fa-wallet text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Pendapatan</p>
+                        <h3 class="text-xl font-bold text-emerald-600 mt-1" id="dash-pendapatan">Rp 0</h3>
+                    </div>
+                    <div class="p-3 bg-green-100 text-green-600 rounded-xl">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Beban & HPP</p>
+                        <h3 class="text-xl font-bold text-rose-600 mt-1" id="dash-beban">Rp 0</h3>
+                    </div>
+                    <div class="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                        <i class="fa-solid fa-arrow-trend-down text-2xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Laba Bersih</p>
+                        <h3 class="text-xl font-bold mt-1" id="dash-laba">Rp 0</h3>
+                    </div>
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-xl">
+                        <i class="fa-solid fa-coins text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Quick Actions & Status -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4 lg:col-span-1">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-3 flex items-center">
+                        <i class="fa-solid fa-bolt text-amber-500 mr-2"></i> Akses Cepat Simulasi
+                    </h2>
+                    <p class="text-xs text-slate-500">Gunakan simulasi ini untuk memodelkan keuangan UMKM Buket Bunga Mavin secara akurat.</p>
+
+                    <div class="space-y-2">
+                        <button onclick="switchTab('transaksi'); openTransactionModal('modal_awal')" class="w-full text-left bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 p-3 rounded-lg text-xs font-semibold flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-plus-circle mr-2"></i> Input Modal Awal</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                        <button onclick="switchTab('transaksi'); openTransactionModal('penjualan')" class="w-full text-left bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 p-3 rounded-lg text-xs font-semibold flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-cart-plus mr-2"></i> Catat Penjualan Buket</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                        <button onclick="switchTab('master-bunga')" class="w-full text-left bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 p-3 rounded-lg text-xs font-semibold flex items-center justify-between transition">
+                            <span><i class="fa-solid fa-leaf mr-2"></i> Tambah / Edit Jenis Bunga</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Inventory Overview -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:col-span-2">
+                    <div class="flex items-center justify-between border-b pb-3 mb-4">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-boxes-stacked text-emerald-600 mr-2"></i> Ringkasan Stok Bunga Aktif
+                        </h2>
+                        <button onclick="switchTab('master-bunga')" class="text-xs text-emerald-600 font-semibold hover:underline">Kelola Bunga &rarr;</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-2.5">Nama Bunga</th>
+                                    <th class="p-2.5 text-right">Harga Beli/Tangkai</th>
+                                    <th class="p-2.5 text-right">Harga Jual/Tangkai</th>
+                                    <th class="p-2.5 text-center">Sisa Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-inventory-list" class="divide-y border-t border-slate-100">
+                                <tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada jenis bunga diset. Silakan tambah jenis bunga.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KATALOG / MASTER BUNGA -->
+        <section id="sec-master-bunga" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Manajemen Jenis & Stok Bunga</h2>
+                        <p class="text-xs text-slate-500">Karena pasokan bunga Mavin berbeda-beda setiap saat, tambahkan jenis bunga secara kustom di sini.</p>
+                    </div>
+                    <button onclick="openFlowerModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center transition shadow-sm">
+                        <i class="fa-solid fa-plus mr-2"></i> Tambah Jenis Bunga Baru
+                    </button>
+                </div>
+
+                <!-- Flower List Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left text-slate-600">
+                        <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                            <tr>
+                                <th class="p-3">Kode / ID</th>
+                                <th class="p-3">Nama Bunga</th>
+                                <th class="p-3">Kategori / Warna</th>
+                                <th class="p-3 text-right">Harga Beli / Tangkai</th>
+                                <th class="p-3 text-right">Harga Jual / Tangkai</th>
+                                <th class="p-3 text-center">Stok Tangkai</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flower-table-body" class="divide-y border-t border-slate-200">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: INPUT TRANSAKSI -->
+        <section id="sec-transaksi" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Transaction Form Column -->
+                <div class="md:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-3">Form Input Transaksi</h2>
+                    
+                    <form id="form-transaction" onsubmit="handleTransactionSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Transaksi</label>
+                            <input type="date" id="tx-date" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori Transaksi</label>
+                            <select id="tx-type" onchange="toggleTransactionFields()" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="penjualan">Penjualan Buket / Bunga</option>
+                                <option value="pembelian_stok">Pembelian Stok Bunga Baru</option>
+                                <option value="modal_awal">Penyetoran Modal Awal Pemilik</option>
+                                <option value="beban_operasional">Beban Operasional (Sewa, Listrik, Pita, dll)</option>
+                                <option value="prive">Pengambilan Pribadi (Prive)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan / Memori</label>
+                            <input type="text" id="tx-desc" placeholder="Contoh: Penjualan Buket Wisuda Mavin #01" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+
+                        <!-- Dynamic Section: Penjualan Buket Custom -->
+                        <div id="tx-sale-details" class="p-3 bg-slate-50 border rounded-lg space-y-3">
+                            <h4 class="text-xs font-bold text-slate-700">Rincian Komposisi Buket</h4>
+                            <div class="space-y-2" id="bouquet-items-container">
+                                <!-- Flower item rows dynamically added -->
+                            </div>
+                            <button type="button" onclick="addFlowerRowToBouquet()" class="text-xs text-emerald-600 font-semibold hover:underline flex items-center">
+                                <i class="fa-solid fa-plus-circle mr-1"></i> Tambah Bunga Ke Buket
+                            </button>
+
+                            <div class="border-t pt-2 mt-2">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jasa Rangkai / Wrapping / Kartu (Rp)</label>
+                                <input type="number" id="tx-service-fee" min="0" value="0" oninput="calculateSaleTotal()" class="w-full text-xs p-2 border rounded focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- General Amount Input (For non-sale transactions) -->
+                        <div id="tx-general-amount-container" class="hidden">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Nominal (Rp)</label>
+                            <input type="number" id="tx-amount" min="0" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+
+                        <!-- Dynamic Account Selection for Expense -->
+                        <div id="tx-expense-account-container" class="hidden">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Beban</label>
+                            <select id="tx-expense-account" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                                <option value="501">Beban Bahan Habis Pakai / Wrapping Paper</option>
+                                <option value="502">Beban Sewa Tempat / Booth</option>
+                                <option value="503">Beban Listrik & Air</option>
+                                <option value="504">Beban Pemasaran & Promo</option>
+                                <option value="505">Beban Transportasi / Pengiriman</option>
+                                <option value="599">Beban Lain-Lain</option>
+                            </select>
+                        </div>
+
+                        <div id="tx-total-display" class="p-3 bg-emerald-50 text-emerald-900 rounded-lg text-right">
+                            <span class="text-xs block font-medium">Total Nilai Transaksi:</span>
+                            <span class="text-lg font-bold" id="tx-total-val">Rp 0</span>
+                        </div>
+
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-3 rounded-lg transition shadow">
+                            <i class="fa-solid fa-save mr-1.5"></i> Simpan Transaksi & Posting Jurnal
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Transaction History Column -->
+                <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-3">Riwayat Transaksi Terakhir</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-2.5">Tanggal</th>
+                                    <th class="p-2.5">Keterangan</th>
+                                    <th class="p-2.5">Tipe</th>
+                                    <th class="p-2.5 text-right">Nominal Total</th>
+                                    <th class="p-2.5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tx-history-table" class="divide-y border-t border-slate-200">
+                                <tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada transaksi tercatat.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: JURNAL UMUM -->
+        <section id="sec-jurnal" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center justify-between border-b pb-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Jurnal Umum (General Journal)</h2>
+                        <p class="text-xs text-slate-500">Pencatatan double-entry sistematis untuk UMKM Fresh Flower Bucket Mavin.</p>
+                    </div>
+                    <button onclick="window.print()" class="no-print border border-slate-300 text-slate-700 hover:bg-slate-100 px-3 py-1.5 rounded text-xs font-semibold flex items-center">
+                        <i class="fa-solid fa-print mr-1.5"></i> Cetak / PDF
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left text-slate-700 border border-slate-200">
+                        <thead class="bg-slate-100 uppercase font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 border-r">Tanggal</th>
+                                <th class="p-3 border-r">Nama Akun & Keterangan</th>
+                                <th class="p-3 border-r text-center">Ref (Kode)</th>
+                                <th class="p-3 border-r text-right">Debet (Rp)</th>
+                                <th class="p-3 text-right">Kredit (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journal-table-body" class="divide-y divide-slate-200">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                        <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300">
+                            <tr>
+                                <td colspan="3" class="p-3 text-right">TOTAL BALANSI:</td>
+                                <td class="p-3 text-right text-emerald-700" id="journal-total-debit">Rp 0</td>
+                                <td class="p-3 text-right text-emerald-700" id="journal-total-credit">Rp 0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: BUKU BESAR -->
+        <section id="sec-buku-besar" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h2 class="text-lg font-bold text-slate-800">Buku Besar (General Ledger)</h2>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-xs font-semibold text-slate-600">Pilih Akun:</label>
+                        <select id="ledger-account-select" onchange="renderLedger()" class="text-xs p-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <!-- Dynamically filled with Accounts -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left text-slate-700 border border-slate-200">
+                        <thead class="bg-slate-100 uppercase font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 border-r">Tanggal</th>
+                                <th class="p-3 border-r">Keterangan</th>
+                                <th class="p-3 border-r text-right">Debet (Rp)</th>
+                                <th class="p-3 border-r text-right">Kredit (Rp)</th>
+                                <th class="p-3 text-right">Saldo Akhir (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-table-body" class="divide-y divide-slate-200">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: LAPORAN KEUANGAN -->
+        <section id="sec-laporan" class="tab-content hidden space-y-8">
+            <div class="flex justify-end no-print">
+                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center">
+                    <i class="fa-solid fa-print mr-2"></i> Cetak Laporan Lengkap
+                </button>
+            </div>
+
+            <!-- LAPORAN LABA RUGI -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="text-center border-b pb-3">
+                    <h2 class="text-lg font-bold text-slate-800 uppercase">Fresh Flower Bucket Mavin</h2>
+                    <h3 class="text-sm font-semibold text-emerald-700">Laporan Laba Rugi (Income Statement)</h3>
+                    <p class="text-xs text-slate-500" id="report-period">Untuk Periode Simulasi Saat Ini</p>
+                </div>
+
+                <div class="max-w-3xl mx-auto text-xs space-y-4">
+                    <!-- Pendapatan -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 uppercase border-b pb-1">Pendapatan Usaha</h4>
+                        <div class="flex justify-between py-1.5 px-2">
+                            <span>Pendapatan Penjualan Buket & Bunga</span>
+                            <span class="font-semibold" id="income-sales">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 px-2 border-t font-bold text-slate-800 bg-slate-50">
+                            <span>Total Pendapatan (A)</span>
+                            <span id="income-total">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- HPP -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 uppercase border-b pb-1">Harga Pokok Penjualan (HPP)</h4>
+                        <div class="flex justify-between py-1.5 px-2">
+                            <span>Harga Pokok Bunga Terjual (HPP)</span>
+                            <span class="font-semibold" id="income-cogs">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 px-2 border-t font-bold text-slate-800 bg-emerald-50/50">
+                            <span>Laba Kotor (Gross Profit)</span>
+                            <span id="income-gross-profit">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Beban Operasional -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 uppercase border-b pb-1">Beban-Beban Operasional</h4>
+                        <div id="income-expenses-list" class="space-y-1">
+                            <!-- Dynamic expenses list -->
+                        </div>
+                        <div class="flex justify-between py-1.5 px-2 border-t font-bold text-slate-800 bg-slate-50">
+                            <span>Total Beban Operasional (B)</span>
+                            <span id="income-total-expenses">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- LABA BERSIH -->
+                    <div class="p-3 bg-emerald-100 rounded-lg flex justify-between items-center text-sm font-bold text-emerald-900 border border-emerald-300">
+                        <span>LABA / (RUGI) BERSIH:</span>
+                        <span id="income-net-profit">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NERACA -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+                <div class="text-center border-b pb-3">
+                    <h2 class="text-lg font-bold text-slate-800 uppercase">Fresh Flower Bucket Mavin</h2>
+                    <h3 class="text-sm font-semibold text-emerald-700">Laporan Neraca (Balance Sheet)</h3>
+                    <p class="text-xs text-slate-500">Per Posisi Simulasi</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                    <!-- AKTIVA / ASET -->
+                    <div class="border rounded-lg p-4 space-y-3">
+                        <h4 class="font-bold text-slate-800 uppercase border-b pb-2 text-center bg-slate-100 p-1.5 rounded">Aset / Aktiva</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between py-1 border-b border-dashed">
+                                <span>Kas di Tangan</span>
+                                <span class="font-semibold" id="bs-cash">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed">
+                                <span>Persediaan Bunga (Inventory)</span>
+                                <span class="font-semibold" id="bs-inventory">Rp 0</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between py-2 font-bold text-slate-800 bg-emerald-50 p-2 rounded border border-emerald-200 mt-4">
+                            <span>TOTAL ASET:</span>
+                            <span id="bs-total-assets">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- PASIVA (KEWAJIBAN + EKUITAS) -->
+                    <div class="border rounded-lg p-4 space-y-3">
+                        <h4 class="font-bold text-slate-800 uppercase border-b pb-2 text-center bg-slate-100 p-1.5 rounded">Kewajiban & Ekuitas</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between py-1 border-b border-dashed">
+                                <span>Modal Pemilik</span>
+                                <span class="font-semibold" id="bs-equity">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed text-slate-500">
+                                <span>Prive (Pengambilan)</span>
+                                <span class="font-semibold" id="bs-prive">(Rp 0)</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed text-emerald-700">
+                                <span>Laba Berjalan Periodik</span>
+                                <span class="font-semibold" id="bs-retained-earnings">Rp 0</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between py-2 font-bold text-slate-800 bg-emerald-50 p-2 rounded border border-emerald-200 mt-4">
+                            <span>TOTAL PASIVA:</span>
+                            <span id="bs-total-liab-equity">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL ADD / EDIT BUNGA -->
+    <div id="flower-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-slate-800" id="flower-modal-title">Tambah Jenis Bunga</h3>
+                <button onclick="closeFlowerModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-flower" onsubmit="saveFlower(event)" class="space-y-3">
+                <input type="hidden" id="flower-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bunga</label>
+                    <input type="text" id="flower-name" placeholder="misal: Mawar Merah Import" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori / Warna</label>
+                    <input type="text" id="flower-category" placeholder="misal: Merah / Mawar" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Beli/Tangkai (Rp)</label>
+                        <input type="number" id="flower-cost" min="0" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Jual/Tangkai (Rp)</label>
+                        <input type="number" id="flower-price" min="0" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Stok Awal (Tangkai)</label>
+                    <input type="number" id="flower-stock" min="0" value="0" required class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="flex justify-end space-x-2 border-t pt-3">
+                    <button type="button" onclick="closeFlowerModal()" class="px-4 py-2 border rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">Simpan Bunga</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-4 text-center text-xs text-slate-500 no-print">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>&copy; 2026 Modul Simulasi Akuntansi Praktik UMKM - <strong>Fresh Flower Bucket Mavin</strong></p>
+        </div>
+    </footer>
+
+    <script>
+        // ACCOUNT CHART (BAGAN AKUN / COA)
+        const ACCOUNTS = {
+            101: { code: '101', name: 'Kas', type: 'asset' },
+            102: { code: '102', name: 'Persediaan Bunga', type: 'asset' },
+            301: { code: '301', name: 'Modal Mavin', type: 'equity' },
+            302: { code: '302', name: 'Prive Mavin', type: 'equity' },
+            401: { code: '401', name: 'Pendapatan Penjualan', type: 'revenue' },
+            500: { code: '500', name: 'Harga Pokok Penjualan (HPP)', type: 'cogs' },
+            501: { code: '501', name: 'Beban Bahan / Wrapping', type: 'expense' },
+            502: { code: '502', name: 'Beban Sewa', type: 'expense' },
+            503: { code: '503', name: 'Beban Listrik & Air', type: 'expense' },
+            504: { code: '504', name: 'Beban Pemasaran', type: 'expense' },
+            505: { code: '505', name: 'Beban Transportasi', type: 'expense' },
+            599: { code: '599', name: 'Beban Lain-lain', type: 'expense' }
+        };
+
+        // APPLICATION STATE
+        let flowers = [];
+        let transactions = [];
+        let journalEntries = [];
+
+        window.onload = function() {
+            // Set default date input to today
+            document.getElementById('tx-date').valueAsDate = new Date();
+            
+            // Load state from local storage or start with clean empty state (0)
+            const hasSavedData = loadState();
+            
+            if (!hasSavedData) {
+                // Initial launch: default empty state without dummy sample data
+                flowers = [];
+                transactions = [];
+                journalEntries = [];
+                saveState();
+            }
+            
+            updateAllUI();
+        };
+
+        function saveState() {
+            try {
+                localStorage.setItem('mavin_flowers', JSON.stringify(flowers));
+                localStorage.setItem('mavin_transactions', JSON.stringify(transactions));
+                localStorage.setItem('mavin_journals', JSON.stringify(journalEntries));
+                localStorage.setItem('mavin_initialized', 'true');
+            } catch (e) {
+                console.error("Gagal menyimpan data ke storage:", e);
+            }
+        }
+
+        function loadState() {
+            const isInit = localStorage.getItem('mavin_initialized');
+            if (!isInit) return false;
+
+            const f = localStorage.getItem('mavin_flowers');
+            const t = localStorage.getItem('mavin_transactions');
+            const j = localStorage.getItem('mavin_journals');
+
+            if (f) flowers = JSON.parse(f);
+            if (t) transactions = JSON.parse(t);
+            if (j) journalEntries = JSON.parse(j);
+            
+            return true;
+        }
+
+        function resetAllToZero() {
+            flowers = [];
+            transactions = [];
+            journalEntries = [];
+            saveState();
+            updateAllUI();
+            alert('Sistem berhasil direset total menjadi 0. Silakan mulai input Katalog Bunga dan Modal Awal Anda!');
+        }
+
+        function confirmResetAll() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh data simulasi menjadi 0? Semua transaksi dan katalog bunga akan dihapus.")) {
+                resetAllToZero();
+            }
+        }
+
+        function loadSampleData() {
+            if (!confirm("Muat data simulasi contoh? Data yang telah Anda input saat ini akan digantikan.")) return;
+
+            // Sample Flower Master
+            flowers = [
+                { id: 'FL01', name: 'Mawar Merah', category: 'Mawar', cost: 7000, price: 15000, stock: 50 },
+                { id: 'FL02', name: 'Mawar Putih', category: 'Mawar', cost: 7000, price: 15000, stock: 40 },
+                { id: 'FL03', name: 'Lily Putih', category: 'Lily', cost: 12000, price: 25000, stock: 20 },
+                { id: 'FL04', name: 'Baby Breath (Ikat)', category: 'Filler', cost: 15000, price: 30000, stock: 15 }
+            ];
+
+            // Sample Transactions
+            transactions = [];
+            journalEntries = [];
+
+            // 1. Initial Capital
+            recordInitialCapital('2026-10-01', 5000000, 'Setoran Modal Awal Pemilik Mavin');
+            
+            // 2. Buy Initial Inventory Stock
+            recordStockPurchase('2026-10-02', 'FL01', 50, 7000, 'Pembelian Stok Mawar Merah 50 tangkai');
+            recordStockPurchase('2026-10-02', 'FL02', 40, 7000, 'Pembelian Stok Mawar Putih 40 tangkai');
+
+            // 3. Operational Expense
+            recordExpense('2026-10-03', '501', 150000, 'Pembelian Kertas Wrapping & Pita Premium');
+
+            saveState();
+            updateAllUI();
+            alert("Data sampel simulasi berhasil dimuat!");
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-emerald-700', 'bg-emerald-50', 'border-b-2', 'border-emerald-600');
+                btn.classList.add('text-slate-600');
+            });
+
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            const activeNav = document.getElementById('tab-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('text-emerald-700', 'bg-emerald-50', 'border-b-2', 'border-emerald-600');
+                activeNav.classList.remove('text-slate-600');
+            }
+
+            if (tabId === 'buku-besar') populateLedgerSelect();
+        }
+
+        function openFlowerModal(flowerId = null) {
+            const modal = document.getElementById('flower-modal');
+            const title = document.getElementById('flower-modal-title');
+            
+            if (flowerId) {
+                const fl = flowers.find(item => item.id === flowerId);
+                if (!fl) return;
+                title.innerText = "Edit Jenis Bunga";
+                document.getElementById('flower-id').value = fl.id;
+                document.getElementById('flower-name').value = fl.name;
+                document.getElementById('flower-category').value = fl.category;
+                document.getElementById('flower-cost').value = fl.cost;
+                document.getElementById('flower-price').value = fl.price;
+                document.getElementById('flower-stock').value = fl.stock;
+            } else {
+                title.innerText = "Tambah Jenis Bunga Baru";
+                document.getElementById('form-flower').reset();
+                document.getElementById('flower-id').value = '';
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFlowerModal() {
+            const modal = document.getElementById('flower-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveFlower(e) {
+            e.preventDefault();
+            const id = document.getElementById('flower-id').value;
+            const name = document.getElementById('flower-name').value;
+            const category = document.getElementById('flower-category').value;
+            const cost = parseFloat(document.getElementById('flower-cost').value) || 0;
+            const price = parseFloat(document.getElementById('flower-price').value) || 0;
+            const stock = parseInt(document.getElementById('flower-stock').value) || 0;
+
+            if (id) {
+                // Update
+                const index = flowers.findIndex(f => f.id === id);
+                if (index !== -1) {
+                    flowers[index] = { ...flowers[index], name, category, cost, price, stock };
+                }
+            } else {
+                // Create New
+                const newId = 'FL' + String(flowers.length + 1).padStart(2, '0');
+                flowers.push({ id: newId, name, category, cost, price, stock });
+            }
+
+            saveState();
+            updateAllUI();
+            closeFlowerModal();
+        }
+
+        function deleteFlower(id) {
+            if (confirm("Hapus jenis bunga ini dari katalog?")) {
+                flowers = flowers.filter(f => f.id !== id);
+                saveState();
+                updateAllUI();
+            }
+        }
+
+        function renderFlowerTable() {
+            const tbody = document.getElementById('flower-table-body');
+            const dashList = document.getElementById('dash-inventory-list');
+            
+            if (flowers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada jenis bunga. Klik "Tambah Jenis Bunga Baru".</td></tr>`;
+                dashList.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Belum ada stok bunga.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = flowers.map(f => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 font-semibold text-emerald-700">${f.id}</td>
+                    <td class="p-3 font-medium text-slate-800">${f.name}</td>
+                    <td class="p-3">${f.category}</td>
+                    <td class="p-3 text-right">${formatRp(f.cost)}</td>
+                    <td class="p-3 text-right font-semibold text-emerald-600">${formatRp(f.price)}</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${f.stock > 10 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                            ${f.stock} tangkai
+                        </span>
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="openFlowerModal('${f.id}')" class="text-blue-600 hover:text-blue-800 p-1"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteFlower('${f.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            dashList.innerHTML = flowers.map(f => `
+                <tr>
+                    <td class="p-2.5 font-medium text-slate-800">${f.name}</td>
+                    <td class="p-2.5 text-right">${formatRp(f.cost)}</td>
+                    <td class="p-2.5 text-right font-semibold text-emerald-600">${formatRp(f.price)}</td>
+                    <td class="p-2.5 text-center font-bold">${f.stock}</td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleTransactionFields() {
+            const type = document.getElementById('tx-type').value;
+            const saleDetails = document.getElementById('tx-sale-details');
+            const generalAmount = document.getElementById('tx-general-amount-container');
+            const expenseAcc = document.getElementById('tx-expense-account-container');
+
+            if (type === 'penjualan') {
+                saleDetails.classList.remove('hidden');
+                generalAmount.classList.add('hidden');
+                expenseAcc.classList.add('hidden');
+                if (document.getElementById('bouquet-items-container').children.length === 0) {
+                    addFlowerRowToBouquet();
+                }
+                calculateSaleTotal();
+            } else if (type === 'beban_operasional') {
+                saleDetails.classList.add('hidden');
+                generalAmount.classList.remove('hidden');
+                expenseAcc.classList.remove('hidden');
+                updateGeneralTotal();
+            } else {
+                saleDetails.classList.add('hidden');
+                generalAmount.classList.remove('hidden');
+                expenseAcc.classList.add('hidden');
+                updateGeneralTotal();
+            }
+        }
+
+        function updateGeneralTotal() {
+            const amt = parseFloat(document.getElementById('tx-amount').value) || 0;
+            document.getElementById('tx-total-val').innerText = formatRp(amt);
+        }
+
+        document.getElementById('tx-amount').addEventListener('input', updateGeneralTotal);
+
+        function addFlowerRowToBouquet() {
+            const container = document.getElementById('bouquet-items-container');
+            const rowId = 'item-' + Date.now();
+
+            let optionsHtml = flowers.map(f => `<option value="${f.id}">${f.name} (Stok: ${f.stock} | @${formatRp(f.price)})</option>`).join('');
+            if (flowers.length === 0) optionsHtml = `<option value="">-- Tambahkan Bunga di Katalog Dulu --</option>`;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center space-x-2 bg-white p-2 border rounded shadow-sm';
+            row.id = rowId;
+            row.innerHTML = `
+                <select class="flower-select w-2/3 text-xs p-1.5 border rounded outline-none" onchange="calculateSaleTotal()">
+                    ${optionsHtml}
+                </select>
+                <input type="number" min="1" value="1" placeholder="Qty" class="flower-qty w-1/3 text-xs p-1.5 border rounded outline-none" oninput="calculateSaleTotal()">
+                <button type="button" onclick="document.getElementById('${rowId}').remove(); calculateSaleTotal();" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            container.appendChild(row);
+            calculateSaleTotal();
+        }
+
+        function calculateSaleTotal() {
+            let total = 0;
+            const container = document.getElementById('bouquet-items-container');
+            const rows = container.querySelectorAll('.flex');
+
+            rows.forEach(row => {
+                const select = row.querySelector('.flower-select');
+                const qtyInput = row.querySelector('.flower-qty');
+                if (select && qtyInput) {
+                    const flowerId = select.value;
+                    const qty = parseInt(qtyInput.value) || 0;
+                    const fl = flowers.find(f => f.id === flowerId);
+                    if (fl) {
+                        total += fl.price * qty;
+                    }
+                }
+            });
+
+            const serviceFee = parseFloat(document.getElementById('tx-service-fee').value) || 0;
+            total += serviceFee;
+
+            document.getElementById('tx-total-val').innerText = formatRp(total);
+            return total;
+        }
+
+        function handleTransactionSubmit(e) {
+            e.preventDefault();
+            const date = document.getElementById('tx-date').value;
+            const type = document.getElementById('tx-type').value;
+            const desc = document.getElementById('tx-desc').value;
+
+            if (type === 'penjualan') {
+                processSaleTransaction(date, desc);
+            } else if (type === 'pembelian_stok') {
+                const amt = parseFloat(document.getElementById('tx-amount').value) || 0;
+                recordStockPurchase(date, null, 0, amt, desc);
+            } else if (type === 'modal_awal') {
+                const amt = parseFloat(document.getElementById('tx-amount').value) || 0;
+                recordInitialCapital(date, amt, desc);
+            } else if (type === 'beban_operasional') {
+                const amt = parseFloat(document.getElementById('tx-amount').value) || 0;
+                const expAcc = document.getElementById('tx-expense-account').value;
+                recordExpense(date, expAcc, amt, desc);
+            } else if (type === 'prive') {
+                const amt = parseFloat(document.getElementById('tx-amount').value) || 0;
+                recordPrive(date, amt, desc);
+            }
+
+            document.getElementById('form-transaction').reset();
+            document.getElementById('tx-date').valueAsDate = new Date();
+            document.getElementById('bouquet-items-container').innerHTML = '';
+            toggleTransactionFields();
+            saveState();
+            updateAllUI();
+            alert("Transaksi berhasil ditambahkan dan dijurnal secara otomatis!");
+        }
+
+        function processSaleTransaction(date, desc) {
+            const container = document.getElementById('bouquet-items-container');
+            const rows = container.querySelectorAll('.flex');
+            
+            let totalRevenue = 0;
+            let totalCOGS = 0;
+            let itemsSold = [];
+
+            // Check stock availability first
+            for (let row of rows) {
+                const flowerId = row.querySelector('.flower-select').value;
+                const qty = parseInt(row.querySelector('.flower-qty').value) || 0;
+                const fl = flowers.find(f => f.id === flowerId);
+
+                if (!fl) {
+                    alert("Pilih jenis bunga yang valid!");
+                    return;
+                }
+                if (fl.stock < qty) {
+                    alert(`Stok bunga ${fl.name} tidak cukup! Stok tersedia: ${fl.stock}`);
+                    return;
+                }
+            }
+
+            // Deduct stock and compute Total Revenue & Cost
+            rows.forEach(row => {
+                const flowerId = row.querySelector('.flower-select').value;
+                const qty = parseInt(row.querySelector('.flower-qty').value) || 0;
+                const fl = flowers.find(f => f.id === flowerId);
+
+                fl.stock -= qty;
+                totalRevenue += fl.price * qty;
+                totalCOGS += fl.cost * qty;
+                itemsSold.push({ flowerId, name: fl.name, qty, price: fl.price, cost: fl.cost });
+            });
+
+            const serviceFee = parseFloat(document.getElementById('tx-service-fee').value) || 0;
+            totalRevenue += serviceFee;
+
+            const txId = 'TX' + Date.now();
+            transactions.push({
+                id: txId,
+                date,
+                type: 'penjualan',
+                desc,
+                amount: totalRevenue,
+                details: { itemsSold, serviceFee, totalCOGS }
+            });
+
+            // Double Entry Journal Records
+            // 1. Debit Kas, Credit Pendapatan
+            journalEntries.push({
+                txId, date, desc: `Penjualan: ${desc}`,
+                debitAcc: '101', creditAcc: '401', amount: totalRevenue
+            });
+
+            // 2. Debit HPP, Credit Persediaan Bunga
+            if (totalCOGS > 0) {
+                journalEntries.push({
+                    txId, date, desc: `Pencatatan HPP untuk ${desc}`,
+                    debitAcc: '500', creditAcc: '102', amount: totalCOGS
+                });
+            }
+        }
+
+        function recordInitialCapital(date, amount, desc) {
+            const txId = 'TX' + Date.now();
+            transactions.push({ id: txId, date, type: 'modal_awal', desc, amount });
+            journalEntries.push({
+                txId, date, desc,
+                debitAcc: '101', creditAcc: '301', amount
+            });
+        }
+
+        function recordStockPurchase(date, flowerId, qty, amount, desc) {
+            const txId = 'TX' + Date.now();
+            if (flowerId) {
+                const fl = flowers.find(f => f.id === flowerId);
+                if (fl) fl.stock += qty;
+            }
+            transactions.push({ id: txId, date, type: 'pembelian_stok', desc, amount });
+            journalEntries.push({
+                txId, date, desc,
+                debitAcc: '102', creditAcc: '101', amount
+            });
+        }
+
+        function recordExpense(date, expAcc, amount, desc) {
+            const txId = 'TX' + Date.now();
+            transactions.push({ id: txId, date, type: 'beban_operasional', desc, amount });
+            journalEntries.push({
+                txId, date, desc,
+                debitAcc: expAcc, creditAcc: '101', amount
+            });
+        }
+
+        function recordPrive(date, amount, desc) {
+            const txId = 'TX' + Date.now();
+            transactions.push({ id: txId, date, type: 'prive', desc, amount });
+            journalEntries.push({
+                txId, date, desc,
+                debitAcc: '302', creditAcc: '101', amount
+            });
+        }
+
+        function deleteTransaction(txId) {
+            if (confirm("Hapus transaksi ini dan jurnal yang terkait?")) {
+                transactions = transactions.filter(t => t.id !== txId);
+                journalEntries = journalEntries.filter(j => j.txId !== txId);
+                saveState();
+                updateAllUI();
+            }
+        }
+
+        function renderJournal() {
+            const tbody = document.getElementById('journal-table-body');
+            let totalDebit = 0;
+            let totalCredit = 0;
+
+            if (journalEntries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada jurnal umum tercatat.</td></tr>`;
+                document.getElementById('journal-total-debit').innerText = 'Rp 0';
+                document.getElementById('journal-total-credit').innerText = 'Rp 0';
+                return;
+            }
+
+            let rowsHtml = '';
+            journalEntries.forEach(j => {
+                const dAcc = ACCOUNTS[j.debitAcc];
+                const cAcc = ACCOUNTS[j.creditAcc];
+
+                totalDebit += j.amount;
+                totalCredit += j.amount;
+
+                rowsHtml += `
+                    <tr class="hover:bg-slate-50 border-t">
+                        <td class="p-3 border-r font-medium">${j.date}</td>
+                        <td class="p-3 border-r">
+                            <div class="font-semibold text-slate-800">${dAcc.name}</div>
+                            <div class="pl-6 text-slate-600">${cAcc.name}</div>
+                            <div class="text-xs text-slate-400 italic mt-0.5">(${j.desc})</div>
+                        </td>
+                        <td class="p-3 border-r text-center font-mono">
+                            <div>${dAcc.code}</div>
+                            <div>${cAcc.code}</div>
+                        </td>
+                        <td class="p-3 border-r text-right font-semibold text-slate-800">${formatRp(j.amount)}<br><span class="text-slate-300">-</span></td>
+                        <td class="p-3 text-right font-semibold text-slate-800"><span class="text-slate-300">-</span><br>${formatRp(j.amount)}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = rowsHtml;
+            document.getElementById('journal-total-debit').innerText = formatRp(totalDebit);
+            document.getElementById('journal-total-credit').innerText = formatRp(totalCredit);
+        }
+
+        function populateLedgerSelect() {
+            const select = document.getElementById('ledger-account-select');
+            select.innerHTML = Object.values(ACCOUNTS).map(acc => `<option value="${acc.code}">${acc.code} - ${acc.name}</option>`).join('');
+            renderLedger();
+        }
+
+        function renderLedger() {
+            const accCode = document.getElementById('ledger-account-select').value || '101';
+            const acc = ACCOUNTS[accCode];
+            const tbody = document.getElementById('ledger-table-body');
+
+            let balance = 0;
+            let rowsHtml = '';
+
+            journalEntries.forEach(j => {
+                let debit = 0;
+                let credit = 0;
+
+                if (j.debitAcc === accCode) debit = j.amount;
+                if (j.creditAcc === accCode) credit = j.amount;
+
+                if (debit > 0 || credit > 0) {
+                    // Normal Balances
+                    if (['asset', 'cogs', 'expense'].includes(acc.type)) {
+                        balance += (debit - credit);
+                    } else {
+                        balance += (credit - debit);
+                    }
+
+                    rowsHtml += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 border-r">${j.date}</td>
+                            <td class="p-3 border-r">${j.desc}</td>
+                            <td class="p-3 border-r text-right">${debit > 0 ? formatRp(debit) : '-'}</td>
+                            <td class="p-3 border-r text-right">${credit > 0 ? formatRp(credit) : '-'}</td>
+                            <td class="p-3 text-right font-bold text-slate-800">${formatRp(balance)}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            if (!rowsHtml) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Tidak ada aktivitas transaksi untuk akun ${acc.name}.</td></tr>`;
+            } else {
+                tbody.innerHTML = rowsHtml;
+            }
+        }
+
+        function calculateFinancials() {
+            let salesRevenue = 0;
+            let cogsTotal = 0;
+            let expenses = {};
+            let cash = 0;
+            let inventoryValue = 0;
+            let initialCapital = 0;
+            let prive = 0;
+
+            // Compute Current Stock Inventory Value
+            flowers.forEach(f => {
+                inventoryValue += (f.stock * f.cost);
+            });
+
+            // Calculate from Journal
+            journalEntries.forEach(j => {
+                // Revenue
+                if (j.creditAcc === '401') salesRevenue += j.amount;
+                // COGS
+                if (j.debitAcc === '500') cogsTotal += j.amount;
+                
+                // Expenses
+                if (ACCOUNTS[j.debitAcc] && ACCOUNTS[j.debitAcc].type === 'expense') {
+                    expenses[j.debitAcc] = (expenses[j.debitAcc] || 0) + j.amount;
+                }
+
+                // Cash Balance
+                if (j.debitAcc === '101') cash += j.amount;
+                if (j.creditAcc === '101') cash -= j.amount;
+
+                // Capital & Prive
+                if (j.creditAcc === '301') initialCapital += j.amount;
+                if (j.debitAcc === '302') prive += j.amount;
+            });
+
+            let totalExpenses = Object.values(expenses).reduce((a, b) => a + b, 0);
+            let grossProfit = salesRevenue - cogsTotal;
+            let netProfit = grossProfit - totalExpenses;
+
+            return {
+                salesRevenue,
+                cogsTotal,
+                grossProfit,
+                expenses,
+                totalExpenses,
+                netProfit,
+                cash,
+                inventoryValue,
+                initialCapital,
+                prive,
+                totalAssets: cash + inventoryValue,
+                totalLiabEquity: initialCapital - prive + netProfit
+            };
+        }
+
+        function renderFinancialReports() {
+            const fin = calculateFinancials();
+
+            // Dashboard Cards Update
+            document.getElementById('dash-kas').innerText = formatRp(fin.cash);
+            document.getElementById('dash-pendapatan').innerText = formatRp(fin.salesRevenue);
+            document.getElementById('dash-beban').innerText = formatRp(fin.cogsTotal + fin.totalExpenses);
+            document.getElementById('dash-laba').innerText = formatRp(fin.netProfit);
+            document.getElementById('dash-laba').className = `text-xl font-bold mt-1 ${fin.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+
+            // Income Statement
+            document.getElementById('income-sales').innerText = formatRp(fin.salesRevenue);
+            document.getElementById('income-total').innerText = formatRp(fin.salesRevenue);
+            document.getElementById('income-cogs').innerText = formatRp(fin.cogsTotal);
+            document.getElementById('income-gross-profit').innerText = formatRp(fin.grossProfit);
+
+            const expContainer = document.getElementById('income-expenses-list');
+            if (Object.keys(fin.expenses).length === 0) {
+                expContainer.innerHTML = `<div class="text-slate-400 py-1 italic">Tidak ada beban operasional.</div>`;
+            } else {
+                expContainer.innerHTML = Object.entries(fin.expenses).map(([code, amt]) => `
+                    <div class="flex justify-between py-1 px-2">
+                        <span>${ACCOUNTS[code].name}</span>
+                        <span class="font-semibold">${formatRp(amt)}</span>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('income-total-expenses').innerText = formatRp(fin.totalExpenses);
+            document.getElementById('income-net-profit').innerText = formatRp(fin.netProfit);
+
+            // Balance Sheet
+            document.getElementById('bs-cash').innerText = formatRp(fin.cash);
+            document.getElementById('bs-inventory').innerText = formatRp(fin.inventoryValue);
+            document.getElementById('bs-total-assets').innerText = formatRp(fin.totalAssets);
+
+            document.getElementById('bs-equity').innerText = formatRp(fin.initialCapital);
+            document.getElementById('bs-prive').innerText = `(${formatRp(fin.prive)})`;
+            document.getElementById('bs-retained-earnings').innerText = formatRp(fin.netProfit);
+            document.getElementById('bs-total-liab-equity').innerText = formatRp(fin.totalLiabEquity);
+        }
+
+        function renderTransactionHistory() {
+            const tbody = document.getElementById('tx-history-table');
+            if (transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Belum ada transaksi tercatat.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = transactions.slice().reverse().map(t => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-medium">${t.date}</td>
+                    <td class="p-2.5">${t.desc}</td>
+                    <td class="p-2.5">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 text-slate-700">${t.type.replace('_', ' ')}</span>
+                    </td>
+                    <td class="p-2.5 text-right font-semibold text-slate-800">${formatRp(t.amount)}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="deleteTransaction('${t.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateAllUI() {
+            renderFlowerTable();
+            renderTransactionHistory();
+            renderJournal();
+            renderFinancialReports();
+        }
+
+        function formatRp(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number || 0);
+        }
+
+        function openTransactionModal(type) {
+            document.getElementById('tx-type').value = type;
+            toggleTransactionFields();
+        }
+    </script>
+</body>
+</html>
